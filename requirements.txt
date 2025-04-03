@@ -1,0 +1,24 @@
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.1.2+cu121; python_version >= "3.11"
+torchvision==0.16.2+cu121; python_version >= "3.11"
+
+cython
+pycocotools
+fairscale
+timm
+transformers
+pydantic
+rf100vl
+einops
+ninja
+supervision
+fairscale
+accelerate
+peft
+pylabel
+onnx
+onnxruntime
+onnxsim
+onnx_graphsurgeon
+polygraphy
+open_clip_torch
