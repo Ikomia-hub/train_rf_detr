@@ -21,7 +21,7 @@ import torch
 import torch.utils.data
 import torchvision
 
-import rfdetr.datasets.transforms as T
+import train_rf_detr.rf_detr.rfdetr.datasets.transforms as T
 
 
 def compute_multi_scale_scales(resolution, expanded_scales=False):
@@ -35,10 +35,12 @@ def compute_multi_scale_scales(resolution, expanded_scales=False):
         # assume we're doing some other resolution and therefore patch_size is 16
         patch_size = 16
     else:
-        raise ValueError(f"Resolution {resolution} is not divisible by 16*4 or 14*4")
+        raise ValueError(
+            f"Resolution {resolution} is not divisible by 16*4 or 14*4")
     # round to the nearest multiple of 4*patch_size to enable both patching and windowing
     base_num_patches_per_window = resolution // (patch_size * 4)
-    offsets = [-3, -2, -1, 0, 1, 2, 3, 4] if not expanded_scales else [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    offsets = [-3, -2, -1, 0, 1, 2, 3,
+               4] if not expanded_scales else [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
     scales = [base_num_patches_per_window + offset for offset in offsets]
     return [scale * patch_size * 4 for scale in scales]
 
@@ -92,7 +94,8 @@ class ConvertCoco(object):
 
         # for conversion to coco api
         area = torch.tensor([obj["area"] for obj in anno])
-        iscrowd = torch.tensor([obj["iscrowd"] if "iscrowd" in obj else 0 for obj in anno])
+        iscrowd = torch.tensor(
+            [obj["iscrowd"] if "iscrowd" in obj else 0 for obj in anno])
         target["area"] = area[keep]
         target["iscrowd"] = iscrowd[keep]
 
@@ -152,7 +155,6 @@ def make_coco_transforms_square_div_64(image_set, resolution, multi_scale=False,
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-
     scales = [resolution]
     if multi_scale:
         # scales = [448, 512, 576, 640, 704, 768, 832, 896]
@@ -186,34 +188,37 @@ def make_coco_transforms_square_div_64(image_set, resolution, multi_scale=False,
 
     raise ValueError(f'unknown {image_set}')
 
+
 def build(image_set, args, resolution):
     root = Path(args.coco_path)
     assert root.exists(), f'provided COCO path {root} does not exist'
     mode = 'instances'
     PATHS = {
         "train": (root / "train2017", root / "annotations" / f'{mode}_train2017.json'),
-        "val": (root /  "val2017", root / "annotations" / f'{mode}_val2017.json'),
+        "val": (root / "val2017", root / "annotations" / f'{mode}_val2017.json'),
         "test": (root / "test2017", root / "annotations" / f'image_info_test-dev2017.json'),
     }
-    
+
     img_folder, ann_file = PATHS[image_set.split("_")[0]]
-    
+
     try:
         square_resize = args.square_resize
     except:
         square_resize = False
-    
+
     try:
         square_resize_div_64 = args.square_resize_div_64
     except:
         square_resize_div_64 = False
 
-    
     if square_resize_div_64:
-        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms_square_div_64(image_set, resolution, multi_scale=args.multi_scale, expanded_scales=args.expanded_scales))
+        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms_square_div_64(
+            image_set, resolution, multi_scale=args.multi_scale, expanded_scales=args.expanded_scales))
     else:
-        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set, resolution, multi_scale=args.multi_scale, expanded_scales=args.expanded_scales))
+        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(
+            image_set, resolution, multi_scale=args.multi_scale, expanded_scales=args.expanded_scales))
     return dataset
+
 
 def build_roboflow(image_set, args, resolution):
     root = Path(args.dataset_dir)
@@ -221,25 +226,26 @@ def build_roboflow(image_set, args, resolution):
     mode = 'instances'
     PATHS = {
         "train": (root / "train", root / "train" / "_annotations.coco.json"),
-        "val": (root /  "valid", root / "valid" / "_annotations.coco.json"),
+        "val": (root / "valid", root / "valid" / "_annotations.coco.json"),
         "test": (root / "test", root / "test" / "_annotations.coco.json"),
     }
-    
+
     img_folder, ann_file = PATHS[image_set.split("_")[0]]
-    
+
     try:
         square_resize = args.square_resize
     except:
         square_resize = False
-    
+
     try:
         square_resize_div_64 = args.square_resize_div_64
     except:
         square_resize_div_64 = False
 
-    
     if square_resize_div_64:
-        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms_square_div_64(image_set, resolution, multi_scale=args.multi_scale))
+        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms_square_div_64(
+            image_set, resolution, multi_scale=args.multi_scale))
     else:
-        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set, resolution, multi_scale=args.multi_scale))
+        dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(
+            image_set, resolution, multi_scale=args.multi_scale))
     return dataset

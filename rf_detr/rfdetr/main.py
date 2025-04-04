@@ -34,7 +34,7 @@ from train_rf_detr.rf_detr.rfdetr.engine import evaluate, train_one_epoch
 from train_rf_detr.rf_detr.rfdetr.models import build_model, build_criterion_and_postprocessors
 from train_rf_detr.rf_detr.rfdetr.util.drop_scheduler import drop_scheduler
 from train_rf_detr.rf_detr.rfdetr.util.get_param_dicts import get_param_dict
-import rfdetr.util.misc as utils
+import train_rf_detr.rf_detr.rfdetr.util.misc as utils
 from train_rf_detr.rf_detr.rfdetr.util.utils import ModelEma, BestMetricHolder, clean_state_dict
 from train_rf_detr.rf_detr.rfdetr.util.benchmark import benchmark
 from torch import nn
