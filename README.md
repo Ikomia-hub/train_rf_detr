@@ -79,7 +79,9 @@ Ikomia Studio offers a friendly UI with the same features as the API.
 - `workers` (int) - default '0': Number of worker threads for data loading (per RANK if DDP).
 - `lr` (float) - default '0.00025': Initial learning rate. Adjusting this value is crucial for the optimization process, influencing how rapidly model weights are updated.
 - `output_folder` (str, *optional*): path to where the model will be saved. 
-- `config_file` (str, *optional*): path to the training config file .yaml. Using a [config file](https://github.com/Ikomia-hub/train_d_fine/configs/template/config_template.yaml) allows you to set all the train settings available. 
+- `early_stopping` (bool) - default 'False': Whether to enable early stopping during training. This stops training if performance stops improving after a certain number of epochs.
+- `early_stopping_patience`(int) - default '10': Number of consecutive validation checks with no improvement before early stopping is triggered. Only applicable if `early_stopping=True`.
+
 
 **Parameters** should be in **strings format**  when added to the dictionary.
 ```python

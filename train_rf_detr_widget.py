@@ -60,6 +60,14 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
             step=0.05, decimals=2
         )
 
+        # Early stopping
+        self.check_early_stopping = pyqtutils.append_check(
+            self.grid_layout, "Early stopping", self.parameters.cfg["early_stopping"])
+
+        # Early stopping patience
+        self.spin_early_stopping_patience = pyqtutils.append_spin(
+            self.grid_layout, "Early stopping patience", self.parameters.cfg["early_stopping_patience"])
+
         # Hyper-parameters
         custom_hyp = bool(self.parameters.cfg["config_file"])
         self.check_hyp = QCheckBox("Custom hyper-parameters")
@@ -106,6 +114,10 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         self.parameters.cfg["input_size"] = self.spin_input_size.value()
         self.parameters.cfg["batch_size"] = self.spin_batch.value()
         self.parameters.cfg["dataset_split_ratio"] = self.spin_train_test_split.value(
+        )
+        self.parameters.cfg["early_stopping"] = self.check_early_stopping.isChecked(
+        )
+        self.parameters.cfg["early_stopping_patience"] = self.spin_early_stopping_patience.value(
         )
         self.parameters.cfg["output_folder"] = self.browse_out_folder.path
         if self.check_hyp.isChecked():

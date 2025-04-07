@@ -4,7 +4,7 @@ import yaml
 import torch
 from datetime import datetime
 from ikomia.dnn import dnntrain
-from ikomia import core, dataprocess
+from ikomia import core, dataprocess, utils
 from ikomia.core.task import TaskParam
 from train_rf_detr.utils.ikutils import prepare_dataset
 from train_rf_detr.utils.model_utils import load_model
@@ -34,7 +34,8 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["weight_decay"] = 1e-4
         self.cfg["lr"] = 1e-4
         self.cfg["lr_encoder"] = 1.5e-4
-        self.cfg["config_file"] = ""
+        self.cfg["early_stopping"] = False
+        self.cfg["early_stopping_patience"] = 10
         self.cfg["output_folder"] = os.path.dirname(
             os.path.realpath(__file__)) + "/runs/"
 
@@ -50,7 +51,10 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["weight_decay"] = float(param_map["weight_decay"])
         self.cfg["lr"] = float(param_map["lr"])
         self.cfg["lr_encoder"] = float(param_map["lr_encoder"])
-        self.cfg["config_file"] = param_map["config_file"]
+        self.cfg["early_stopping"] = utils.strtobool(
+            param_map["early_stopping"])
+        self.cfg["early_stopping_patience"] = int(
+            param_map["early_stopping_patience"])
         self.cfg["dataset_split_ratio"] = float(
             param_map["dataset_split_ratio"])
         self.cfg["output_folder"] = str(param_map["output_folder"])
