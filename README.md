@@ -23,7 +23,7 @@ Train D-FINE object detection models.
 
 Following best practices recommended by the [official repository](https://github.com/Peterande/D-FINE), this algorithm utilizes the Objects365 pre-trained model as a foundation for fine-tuning, enabling optimized performance for custom object detection tasks.
 
-![Desk object detection](https://raw.githubusercontent.com/Ikomia-hub/train_d_fine/main/images/output.jpg)
+![Desk object detection](https://raw.githubusercontent.com/Ikomia-hub/train_rf_detr/main/images/output.jpg)
 
 ## :rocket: Use with Ikomia API
 
@@ -52,7 +52,7 @@ coco.set_parameters({
 }) 
 
 # Add training algorithm
-train = wf.add_task(name="train_d_fine", auto_connect=True)
+train = wf.add_task(name="train_rf_detr", auto_connect=True)
 
 # Launch your training on your data
 wf.run()
@@ -67,17 +67,16 @@ Ikomia Studio offers a friendly UI with the same features as the API.
 
 
 ## :pencil: Set algorithm parameters
-- `model_name` (str) - default 'dfine_m': Name of the D-FINE pre-trained model on Objects365 (Best generalization). Other model available:
-    - dfine_s
-    - dfine_l
-    - dfine_x
+- `model_name` (str) - default 'rf-detr-base': Name of the RF-DETR pre-trained model. Other model available:
+    - rf-detr-large
 - `batch_size` (int) - default '8': Number of samples processed before the model is updated.
-- `epochs` (int) - default '50': Number of complete passes through the training dataset.
+- `epochs` (int) - default '100': Number of complete passes through the training dataset.
 - `dataset_split_ratio` (float) – default '0.9': Divide the dataset into train and evaluation sets ]0, 1[.
-- `input_size` (int) - default '640': Size of the input image.
+- `input_size` (int) - default '560': Size of the input image.
 - `weight_decay` (float) - default '0.000125': Amount of weight decay, regularization method.
 - `workers` (int) - default '0': Number of worker threads for data loading (per RANK if DDP).
 - `lr` (float) - default '0.00025': Initial learning rate. Adjusting this value is crucial for the optimization process, influencing how rapidly model weights are updated.
+- `lr_encoder` (float) - default '1.5e-4': Separate learning rate for the encoder parameters. Allows fine-tuning at a different rate than the rest of the model.
 - `output_folder` (str, *optional*): path to where the model will be saved. 
 - `early_stopping` (bool) - default 'False': Whether to enable early stopping during training. This stops training if performance stops improving after a certain number of epochs.
 - `early_stopping_patience`(int) - default '10': Number of consecutive validation checks with no improvement before early stopping is triggered. Only applicable if `early_stopping=True`.
@@ -106,14 +105,13 @@ train.set_parameters({
     "model_name": "dfine_m",
     "epochs": "100",
     "batch_size": "6",
-    "input_size": "640",
+    "input_size": "560",
     "dataset_split_ratio": "0.9",
     "workers": "0",  # Recommended to set to 0 if you are using Windows
-    "weight_decay": "0.000125",
-    "lr": "0.00025",
+    "weight_decay": "1e-4",
+    "lr": " 1e-4",
     "output_folder": "Path/To/Output/Folder", # Default folder : runs 
     "model_weight_file": "", # Optional
-    "config_file": "Path/To/Config/file", # Optional 
     
 })
 

@@ -121,9 +121,9 @@ class TrainRfDetr(dnntrain.TrainProcess):
             yaml.dump(model_info, file, allow_unicode=True)
 
         # Check input size
-        if param.cfg["input_size"] % 14 != 0:
-            print("Input size must be a multiple of 14. Adjusting...")
-            param.cfg["input_size"] = param.cfg["input_size"] // 14 * 14
+        if param.cfg["input_size"] % 56 != 0:
+            print("Input size must be a multiple of 56. Adjusting...")
+            param.cfg["input_size"] = param.cfg["input_size"] // 56 * 56
             print(f"Adjusted input size: {param.cfg['input_size']}")
 
         # Load and Train the model
