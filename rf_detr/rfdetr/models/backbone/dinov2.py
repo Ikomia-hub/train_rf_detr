@@ -4,7 +4,7 @@ from transformers import AutoBackbone, AutoConfig
 import torch.nn.functional as F
 import types
 import math
-import os
+
 from .dinov2_with_windowed_attn import WindowedDinov2WithRegistersConfig, WindowedDinov2WithRegistersBackbone
 
 
@@ -21,19 +21,17 @@ class DinoV2(nn.Module):
         super().__init__()
 
         name = f"facebook/dinov2-with-registers-{size}" if use_registers else f"facebook/dinov2-{size}"
-        # Edit cache dir to be weights dir
-        weights_dir = os.path.join(
-            os.path.dirname(__file__), "..", "..", "..", "..", "weights")
+
         self.shape = shape
 
         # Create the encoder
+
         if not use_windowed_attn:
             assert not gradient_checkpointing, "Gradient checkpointing is not supported for non-windowed attention"
             self.encoder = AutoBackbone.from_pretrained(
                 name,
                 out_features=[f"stage{i}" for i in out_feature_indexes],
                 return_dict=False,
-                cache_dir=weights_dir,
             )
         else:
             window_block_indexes = set(range(out_feature_indexes[-1] + 1))
@@ -44,7 +42,6 @@ class DinoV2(nn.Module):
                 name,
                 out_features=[f"stage{i}" for i in out_feature_indexes],
                 return_dict=False,
-                cache_dir=weights_dir
             )
             if use_registers:
                 windowed_dino_config = WindowedDinov2WithRegistersConfig(
@@ -64,7 +61,6 @@ class DinoV2(nn.Module):
             self.encoder = WindowedDinov2WithRegistersBackbone.from_pretrained(
                 name,
                 config=windowed_dino_config,
-                cache_dir=weights_dir
             )
 
         self._out_feature_channels = [
