@@ -19,9 +19,7 @@
     </a> 
 </p>
 
-Train D-FINE object detection models.
-
-Following best practices recommended by the [official repository](https://github.com/Peterande/D-FINE), this algorithm utilizes the Objects365 pre-trained model as a foundation for fine-tuning, enabling optimized performance for custom object detection tasks.
+Train RF-DETR object detection models.
 
 ![Desk object detection](https://raw.githubusercontent.com/Ikomia-hub/train_rf_detr/main/images/output.jpg)
 
@@ -110,9 +108,7 @@ train.set_parameters({
     "workers": "0",  # Recommended to set to 0 if you are using Windows
     "weight_decay": "1e-4",
     "lr": " 1e-4",
-    "output_folder": "Path/To/Output/Folder", # Default folder : runs 
-    "model_weight_file": "", # Optional
-    
+    "output_folder": "Path/To/Output/Folder", # Default folder : runs     
 })
 
 # Launch your training on your data
