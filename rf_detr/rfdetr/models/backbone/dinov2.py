@@ -4,7 +4,7 @@ from transformers import AutoBackbone, AutoConfig
 import torch.nn.functional as F
 import types
 import math
-
+import os
 from .dinov2_with_windowed_attn import WindowedDinov2WithRegistersConfig, WindowedDinov2WithRegistersBackbone
 
 
