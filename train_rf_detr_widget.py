@@ -4,12 +4,14 @@ from train_rf_detr.train_rf_detr_process import TrainRfDetrParam
 
 # PyQt GUI framework
 from PyQt5.QtWidgets import *
-
+from PyQt5.QtCore import Qt
 
 # --------------------
 # - Class which implements widget associated with the algorithm
 # - Inherits PyCore.CWorkflowTaskWidget from Ikomia API
 # --------------------
+
+
 class TrainRfDetrWidget(core.CWorkflowTaskWidget):
 
     def __init__(self, param, parent):
@@ -54,39 +56,32 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         # Train test split
         self.spin_train_test_split = pyqtutils.append_double_spin(
             self.grid_layout,
-            "Test image percentage",
+            "Split train/val",
             self.parameters.cfg["dataset_split_ratio"],
             min=0.01, max=1.0,
             step=0.05, decimals=2
         )
 
-        # Early stopping
+        # Early stopping checkbox
         self.check_early_stopping = pyqtutils.append_check(
             self.grid_layout, "Early stopping", self.parameters.cfg["early_stopping"])
+        self.check_early_stopping.stateChanged.connect(
+            self.on_early_stopping_changed)
 
         # Early stopping patience
-        self.spin_early_stopping_patience = pyqtutils.append_spin(
-            self.grid_layout, "Early stopping patience", self.parameters.cfg["early_stopping_patience"])
-
-        # Hyper-parameters
-        custom_hyp = bool(self.parameters.cfg["config_file"])
-        self.check_hyp = QCheckBox("Custom hyper-parameters")
-        self.check_hyp.setChecked(custom_hyp)
-        self.grid_layout.addWidget(
-            self.check_hyp, self.grid_layout.rowCount(), 0, 1, 2)
-        self.check_hyp.stateChanged.connect(self.on_custom_hyp_changed)
-
-        self.label_hyp = QLabel("Hyper-parameters file")
-        self.browse_hyp_file = pyqtutils.BrowseFileWidget(path=self.parameters.cfg["config_file"],
-                                                          tooltip="Select file",
-                                                          mode=QFileDialog.ExistingFile)
-
         row = self.grid_layout.rowCount()
-        self.grid_layout.addWidget(self.label_hyp, row, 0)
-        self.grid_layout.addWidget(self.browse_hyp_file, row, 1)
-
-        self.label_hyp.setVisible(custom_hyp)
-        self.browse_hyp_file.setVisible(custom_hyp)
+        self.spin_early_stopping_patience = pyqtutils.append_spin(
+            self.grid_layout,
+            "Early stopping patience",
+            self.parameters.cfg["early_stopping_patience"]
+        )
+        # Retrieve the label widget from the grid layout
+        self.label_early_stopping_patience = self.grid_layout.itemAtPosition(
+            row, 0).widget()
+        # Hide initially if early stopping is disabled
+        visible = self.check_early_stopping.isChecked()
+        self.label_early_stopping_patience.setVisible(visible)
+        self.spin_early_stopping_patience.setVisible(visible)
 
         # Output folder
         self.browse_out_folder = pyqtutils.append_browse_file(
@@ -96,15 +91,15 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
             mode=QFileDialog.Directory
         )
 
-        # PyQt -> Qt wrapping
+        # Wrap layout for Qt
         layout_ptr = qtconversion.PyQtToQt(self.grid_layout)
-
-        # Set widget layout
         self.set_layout(layout_ptr)
 
-    def on_custom_hyp_changed(self, int):
-        self.label_hyp.setVisible(self.check_hyp.isChecked())
-        self.browse_hyp_file.setVisible(self.check_hyp.isChecked())
+    def on_early_stopping_changed(self, state):
+        # Toggle visibility of patience widgets
+        enabled = (state == Qt.Checked)
+        self.label_early_stopping_patience.setVisible(enabled)
+        self.spin_early_stopping_patience.setVisible(enabled)
 
     def on_apply(self):
         # Apply button clicked slot
@@ -120,10 +115,6 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         self.parameters.cfg["early_stopping_patience"] = self.spin_early_stopping_patience.value(
         )
         self.parameters.cfg["output_folder"] = self.browse_out_folder.path
-        if self.check_hyp.isChecked():
-            self.parameters.cfg["config_file"] = self.browse_hyp_file.path
-        self.parameters.update = True
-
         # Send signal to launch the process
         self.emit_apply(self.parameters)
 
