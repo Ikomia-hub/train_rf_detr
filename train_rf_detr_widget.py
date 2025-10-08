@@ -1,17 +1,18 @@
-from ikomia import core, dataprocess
-from ikomia.utils import pyqtutils, qtconversion
-from train_rf_detr.train_rf_detr_process import TrainRfDetrParam
-
 # PyQt GUI framework
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+
+from ikomia import core, dataprocess
+from ikomia.utils import pyqtutils, qtconversion
+
+from train_rf_detr.train_rf_detr_process import TrainRfDetrParam
+from train_rf_detr.utils.model_utils import MODEL_CLASSES
+
 
 # --------------------
 # - Class which implements widget associated with the algorithm
 # - Inherits PyCore.CWorkflowTaskWidget from Ikomia API
 # --------------------
-
-
 class TrainRfDetrWidget(core.CWorkflowTaskWidget):
 
     def __init__(self, param, parent):
@@ -26,11 +27,10 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         self.grid_layout = QGridLayout()
 
         # Model name
-        self.combo_model = pyqtutils.append_combo(
-            self.grid_layout, "Model name")
-        self.combo_model.addItem("rf-detr-base")
-        self.combo_model.addItem("rf-detr-base-2")
-        self.combo_model.addItem("rf-detr-large")
+        self.combo_model = pyqtutils.append_combo(self.grid_layout, "Model name")
+        for model_name in MODEL_CLASSES:
+            self.combo_model.addItem(model_name)
+
         self.combo_model.setCurrentText(self.parameters.cfg["model_name"])
 
         # Dataset folder
@@ -42,16 +42,17 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         )
 
         # Epochs
-        self.spin_epochs = pyqtutils.append_spin(
-            self.grid_layout, "Epochs", self.parameters.cfg["epochs"])
+        self.spin_epochs = pyqtutils.append_spin(self.grid_layout, "Epochs", self.parameters.cfg["epochs"])
 
         # Batch size
-        self.spin_batch = pyqtutils.append_spin(
-            self.grid_layout, "Batch size", self.parameters.cfg["batch_size"])
+        self.spin_batch = pyqtutils.append_spin(self.grid_layout, "Batch size", self.parameters.cfg["batch_size"])
 
         # Train/ val image size
         self.spin_input_size = pyqtutils.append_spin(
-            self.grid_layout, "Image size", self.parameters.cfg["input_size"])
+            self.grid_layout,
+            "Image size",
+            self.parameters.cfg["input_size"]
+        )
 
         # Train test split
         self.spin_train_test_split = pyqtutils.append_double_spin(
@@ -64,9 +65,12 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
 
         # Early stopping checkbox
         self.check_early_stopping = pyqtutils.append_check(
-            self.grid_layout, "Early stopping", self.parameters.cfg["early_stopping"])
-        self.check_early_stopping.stateChanged.connect(
-            self.on_early_stopping_changed)
+            self.grid_layout,
+            "Early stopping",
+            self.parameters.cfg["early_stopping"]
+        )
+
+        self.check_early_stopping.stateChanged.connect(self.on_early_stopping_changed)
 
         # Early stopping patience
         row = self.grid_layout.rowCount()
@@ -76,8 +80,7 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
             self.parameters.cfg["early_stopping_patience"]
         )
         # Retrieve the label widget from the grid layout
-        self.label_early_stopping_patience = self.grid_layout.itemAtPosition(
-            row, 0).widget()
+        self.label_early_stopping_patience = self.grid_layout.itemAtPosition(row, 0).widget()
         # Hide initially if early stopping is disabled
         visible = self.check_early_stopping.isChecked()
         self.label_early_stopping_patience.setVisible(visible)
@@ -108,12 +111,9 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
         self.parameters.cfg["epochs"] = self.spin_epochs.value()
         self.parameters.cfg["input_size"] = self.spin_input_size.value()
         self.parameters.cfg["batch_size"] = self.spin_batch.value()
-        self.parameters.cfg["dataset_split_ratio"] = self.spin_train_test_split.value(
-        )
-        self.parameters.cfg["early_stopping"] = self.check_early_stopping.isChecked(
-        )
-        self.parameters.cfg["early_stopping_patience"] = self.spin_early_stopping_patience.value(
-        )
+        self.parameters.cfg["dataset_split_ratio"] = self.spin_train_test_split.value()
+        self.parameters.cfg["early_stopping"] = self.check_early_stopping.isChecked()
+        self.parameters.cfg["early_stopping_patience"] = self.spin_early_stopping_patience.value()
         self.parameters.cfg["output_folder"] = self.browse_out_folder.path
         # Send signal to launch the process
         self.emit_apply(self.parameters)
