@@ -1,11 +1,14 @@
 import copy
 import os
 import yaml
-import torch
 from datetime import datetime
+
+import torch
+
 from ikomia.dnn import dnntrain
 from ikomia import core, dataprocess, utils
 from ikomia.core.task import TaskParam
+
 from train_rf_detr.utils.ikutils import prepare_dataset
 from train_rf_detr.utils.model_utils import load_model
 
@@ -14,16 +17,13 @@ from train_rf_detr.utils.model_utils import load_model
 # - Class to handle the algorithm parameters
 # - Inherits PyCore.CWorkflowTaskParam from Ikomia API
 # --------------------
-
-
 class TrainRfDetrParam(TaskParam):
 
     def __init__(self):
         TaskParam.__init__(self)
-        dataset_folder = os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), "dataset")
+        dataset_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "dataset")
         self.cfg["dataset_folder"] = dataset_folder
-        self.cfg["model_name"] = "rf-detr-base"
+        self.cfg["model_name"] = "rf-detr-medium"
         self.cfg["model_weight_file"] = ""
         self.cfg["epochs"] = 100
         self.cfg["batch_size"] = 2
@@ -36,8 +36,7 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["lr_encoder"] = 1.5e-4
         self.cfg["early_stopping"] = False
         self.cfg["early_stopping_patience"] = 10
-        self.cfg["output_folder"] = os.path.dirname(
-            os.path.realpath(__file__)) + "/runs/"
+        self.cfg["output_folder"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "runs/")
 
     def set_values(self, param_map):
         self.cfg["dataset_folder"] = str(param_map["dataset_folder"])
@@ -51,12 +50,9 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["weight_decay"] = float(param_map["weight_decay"])
         self.cfg["lr"] = float(param_map["lr"])
         self.cfg["lr_encoder"] = float(param_map["lr_encoder"])
-        self.cfg["early_stopping"] = utils.strtobool(
-            param_map["early_stopping"])
-        self.cfg["early_stopping_patience"] = int(
-            param_map["early_stopping_patience"])
-        self.cfg["dataset_split_ratio"] = float(
-            param_map["dataset_split_ratio"])
+        self.cfg["early_stopping"] = utils.strtobool(param_map["early_stopping"])
+        self.cfg["early_stopping_patience"] = int(param_map["early_stopping_patience"])
+        self.cfg["dataset_split_ratio"] = float(param_map["dataset_split_ratio"])
         self.cfg["output_folder"] = str(param_map["output_folder"])
 
 
@@ -73,6 +69,7 @@ class TrainRfDetr(dnntrain.TrainProcess):
             self.set_param_object(TrainRfDetrParam())
         else:
             self.set_param_object(copy.deepcopy(param))
+
         self.device = torch.device("cpu")
         self.model_weights = None
         self.enable_tensorboard(False)
@@ -97,8 +94,7 @@ class TrainRfDetr(dnntrain.TrainProcess):
         # Prepare dataset
         dataset_yaml_info, class_names = prepare_dataset(dataset_input.data,
                                                          param.cfg["dataset_folder"],
-                                                         param.cfg["dataset_split_ratio"]
-                                                         )
+                                                         param.cfg["dataset_split_ratio"])
         print(f"\nFinal dataset info: {dataset_yaml_info}")
 
         # Call begin_task_run() for initialization
@@ -107,8 +103,7 @@ class TrainRfDetr(dnntrain.TrainProcess):
         # Create output folder
         experiment_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         os.makedirs(param.cfg["output_folder"], exist_ok=True)
-        output_folder = os.path.join(
-            param.cfg["output_folder"], experiment_name)
+        output_folder = os.path.join(param.cfg["output_folder"], experiment_name)
         os.makedirs(output_folder, exist_ok=True)
 
         # Save model name and class names to one YAML file
@@ -117,6 +112,7 @@ class TrainRfDetr(dnntrain.TrainProcess):
             "model_name": param.cfg["model_name"],
             "classes": class_names
         }
+
         with open(os.path.join(output_folder, 'class_names.yaml'), 'w', encoding='utf-8') as file:
             yaml.dump(model_info, file, allow_unicode=True)
 
@@ -158,7 +154,7 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.name = "train_rf_detr"
         self.info.short_description = "Train RF-DETR models"
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.0.0"
+        self.info.version = "1.1.0"
         self.info.icon_path = "images/icon.png"
         self.info.authors = "Robinson, Isaac and Robicheaux, Peter and Popov, Matvei"
         self.info.article = ""
@@ -167,10 +163,10 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.license = "Apache-2.0"
 
         # Ikomia API compatibility
-        self.info.min_ikomia_version = "0.13.0"
+        self.info.min_ikomia_version = "0.15.0"
 
         # Python compatibility
-        self.info.min_python_version = "3.11.0"
+        self.info.min_python_version = "3.9.0"
         # self.info.max_python_version = "3.11.0"
 
         # URL of documentation
@@ -184,6 +180,12 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.keywords = "DETR, object, detection, roboflow, real-time"
         self.info.algo_type = core.AlgoType.TRAIN
         self.info.algo_tasks = "OBJECT_DETECTION"
+
+        # Min hardware config
+        self.info.hardware_config.min_cpu = 8
+        self.info.hardware_config.min_ram = 32
+        self.info.hardware_config.gpu_required = True
+        self.info.hardware_config.min_vram = 24
 
     def create(self, param=None):
         # Create algorithm object
