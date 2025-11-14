@@ -25,7 +25,7 @@ def load_model(param) -> RFDETR:
     # Load the model based on the specified architecture
     model_class = MODEL_CLASSES.get(param.cfg["model_name"])
     if model_class is None:
-        raise ValueError(f"Unsupported model architecture: {param.cfg["model_name"]}")
+        raise ValueError(f"Unsupported model architecture: {param.cfg['model_name']}")
 
     model = model_class(
         resolution=param.cfg["input_size"],
