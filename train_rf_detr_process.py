@@ -154,7 +154,7 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.name = "train_rf_detr"
         self.info.short_description = "Train RF-DETR models"
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.1.0"
+        self.info.version = "1.1.1"
         self.info.icon_path = "images/icon.png"
         self.info.authors = "Robinson, Isaac and Robicheaux, Peter and Popov, Matvei"
         self.info.article = ""
