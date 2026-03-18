@@ -154,7 +154,7 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.name = "train_rf_detr"
         self.info.short_description = "Train RF-DETR models"
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.1.1"
+        self.info.version = "1.2.0"
         self.info.icon_path = "images/icon.png"
         self.info.authors = "Robinson, Isaac and Robicheaux, Peter and Popov, Matvei"
         self.info.article = ""
@@ -163,10 +163,10 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.license = "Apache-2.0"
 
         # Ikomia API compatibility
-        self.info.min_ikomia_version = "0.15.0"
+        self.info.min_ikomia_version = "0.16.0"
 
         # Python compatibility
-        self.info.min_python_version = "3.9.0"
+        self.info.min_python_version = "3.10.0"
         # self.info.max_python_version = "3.11.0"
 
         # URL of documentation

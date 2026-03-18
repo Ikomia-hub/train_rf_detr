@@ -1,6 +1,6 @@
 # PyQt GUI framework
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
 
 from ikomia import core, dataprocess
 from ikomia.utils import pyqtutils, qtconversion
@@ -38,7 +38,7 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
             self.grid_layout, label="Dataset folder",
             path=self.parameters.cfg["dataset_folder"],
             tooltip="Select folder",
-            mode=QFileDialog.Directory
+            mode=QFileDialog.FileMode.Directory
         )
 
         # Epochs
@@ -91,7 +91,7 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
             self.grid_layout, label="Output folder",
             path=self.parameters.cfg["output_folder"],
             tooltip="Select folder",
-            mode=QFileDialog.Directory
+            mode=QFileDialog.FileMode.Directory
         )
 
         # Wrap layout for Qt
@@ -100,7 +100,7 @@ class TrainRfDetrWidget(core.CWorkflowTaskWidget):
 
     def on_early_stopping_changed(self, state):
         # Toggle visibility of patience widgets
-        enabled = (state == Qt.Checked)
+        enabled = (state == Qt.CheckState.Checked)
         self.label_early_stopping_patience.setVisible(enabled)
         self.spin_early_stopping_patience.setVisible(enabled)
 

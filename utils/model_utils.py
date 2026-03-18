@@ -1,7 +1,7 @@
 import os
 
 from rfdetr.detr import RFDETR, RFDETRNano, RFDETRSmall, RFDETRMedium, RFDETRBase, RFDETRLarge
-from rfdetr.main import HOSTED_MODELS
+from rfdetr.main import OPEN_SOURCE_MODELS
 from rfdetr.util.files import download_file
 
 MODEL_CLASSES = {
@@ -45,9 +45,9 @@ def download_pretrain_weights(model_name: str) -> str:
 
     # Check if the weight file exists
     if not os.path.exists(weight_path):
-        if weight_filename in HOSTED_MODELS:
+        if weight_filename in OPEN_SOURCE_MODELS:
             print(f"Downloading pre-trained weights for {model_name}...")
-            download_file(HOSTED_MODELS[weight_filename], weight_path)
+            download_file(OPEN_SOURCE_MODELS[weight_filename], weight_path)
             print(f"Download complete: {weight_path}")
             return weight_path
         else:
