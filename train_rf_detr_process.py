@@ -21,7 +21,8 @@ class TrainRfDetrParam(TaskParam):
 
     def __init__(self):
         TaskParam.__init__(self)
-        dataset_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "dataset")
+        dataset_folder = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), "dataset")
         self.cfg["dataset_folder"] = dataset_folder
         self.cfg["model_name"] = "rf-detr-medium"
         self.cfg["model_weight_file"] = ""
@@ -36,7 +37,8 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["lr_encoder"] = 1.5e-4
         self.cfg["early_stopping"] = False
         self.cfg["early_stopping_patience"] = 10
-        self.cfg["output_folder"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "runs/")
+        self.cfg["output_folder"] = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "runs/")
 
     def set_values(self, param_map):
         self.cfg["dataset_folder"] = str(param_map["dataset_folder"])
@@ -50,9 +52,12 @@ class TrainRfDetrParam(TaskParam):
         self.cfg["weight_decay"] = float(param_map["weight_decay"])
         self.cfg["lr"] = float(param_map["lr"])
         self.cfg["lr_encoder"] = float(param_map["lr_encoder"])
-        self.cfg["early_stopping"] = utils.strtobool(param_map["early_stopping"])
-        self.cfg["early_stopping_patience"] = int(param_map["early_stopping_patience"])
-        self.cfg["dataset_split_ratio"] = float(param_map["dataset_split_ratio"])
+        self.cfg["early_stopping"] = utils.strtobool(
+            param_map["early_stopping"])
+        self.cfg["early_stopping_patience"] = int(
+            param_map["early_stopping_patience"])
+        self.cfg["dataset_split_ratio"] = float(
+            param_map["dataset_split_ratio"])
         self.cfg["output_folder"] = str(param_map["output_folder"])
 
 
@@ -103,7 +108,8 @@ class TrainRfDetr(dnntrain.TrainProcess):
         # Create output folder
         experiment_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         os.makedirs(param.cfg["output_folder"], exist_ok=True)
-        output_folder = os.path.join(param.cfg["output_folder"], experiment_name)
+        output_folder = os.path.join(
+            param.cfg["output_folder"], experiment_name)
         os.makedirs(output_folder, exist_ok=True)
 
         # Save model name and class names to one YAML file
@@ -154,7 +160,7 @@ class TrainRfDetrFactory(dataprocess.CTaskFactory):
         self.info.name = "train_rf_detr"
         self.info.short_description = "Train RF-DETR models"
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "1.2.0"
+        self.info.version = "2.0.0"
         self.info.icon_path = "images/icon.png"
         self.info.authors = "Robinson, Isaac and Robicheaux, Peter and Popov, Matvei"
         self.info.article = ""
